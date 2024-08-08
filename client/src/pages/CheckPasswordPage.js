@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import {useLocation, useNavigate} from 'react-router-dom'
 import toast from 'react-hot-toast'
 import axios from 'axios'
+import Avatar from "../components/Avatar";
 
 const CheckPasswordPage = () => {
     {/* 비밀번호를 체크하는 로직을 만들자 */}
@@ -43,13 +44,18 @@ const CheckPasswordPage = () => {
 
     return(
         <div className='mt-5'>
-            <div className='bg-white w-full max-w-md rounded overflow-hidden p-4 mx-auto'>
+            <div className='bg-white w-full max-w-md  rounded overflow-hidden p-4 mx-auto'>
                 <div className='w-fit mx-auto mb-2 flex justify-center items-center flex-col'>
-                    로그인한 내 아바타표시
+                    <Avatar
+                        width={70}
+                        height={70}
+                        name={location?.state?.name}
+                        imageUrl={location?.state?.profile_pic}
+                    />
                     <h2 className="font-semibold text-lg mt-1">{location?.state?.name}</h2>
                 </div>
                 <form className='grid gap-4 mt-3' onSubmit={handleSubmit}>
-                    <div>
+                    <div className='flex flex-col gap-1'>
                         <label htmlFor='password'>비밀번호 :</label>
                         <input 
                             type='text'

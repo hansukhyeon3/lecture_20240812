@@ -1,4 +1,5 @@
 import React from 'react'
+import { PiUserCircle } from 'react-icons/pi'
 
 const Avatar = ({userId,name,imageUrl,width,height}) => {
   let avatarName = ""
@@ -15,12 +16,27 @@ const Avatar = ({userId,name,imageUrl,width,height}) => {
     <div
       className={`text-slate-800 rounded-full font-bold relative`}
       style={{width:width+"px", height:height+"px"}}>
-        <div 
-          style={{width:width+"px", height:height+"px"}}
-          className={`overflow-hidden rounded-full flex justify-center items-center text-lg bg-yellow-200`}
-        >
-          {avatarName}
-        </div>
+        {
+          imageUrl ? (
+            <img
+              src={imageUrl}
+              width={width}
+              height={height}
+              className='overflow-hidden rounded-full'
+            />
+          ) : (
+            name ? (
+              <div 
+                style={{width:width+"px", height:height+"px"}}
+                className={`overflow-hidden rounded-full flex justify-center items-center text-lg bg-yellow-200`}
+              >
+                {avatarName}
+              </div>    
+            ) : (
+              <PiUserCircle size={width}/>
+            )
+          )
+        }
     </div>
   )
 }
