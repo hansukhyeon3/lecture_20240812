@@ -1,3 +1,11 @@
+sk-9VHtemYXbyXsbvJk
+
+
+1MnJT3BlbkFJY8Mr
+
+
+9iM6SGSp6WiJcTpJ
+
 # 7월09일(화) 
 1. 오리엔테이션
   - 세상 돌아가는 IT 얘기
