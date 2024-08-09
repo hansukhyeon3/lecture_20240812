@@ -1,5 +1,6 @@
 const UserModel = require('../models/UserModel')
 const bcryptjs = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 const checkPassword = async (req,res) => {
     try {
@@ -12,6 +13,14 @@ const checkPassword = async (req,res) => {
                 error: true
             })
         }
+
+        // 웹브라우저에 토큰을 쿠키로 굽자
+        const tokenData = {
+            id: user._id,
+            email: user.email
+        }
+        const token = await jwt.sign(tokenData, process.env.JWT)
+
         return res.status(200).json({
             message: '로그인 성공. 이제 대화하러 가자',
             success: true

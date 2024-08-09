@@ -6,12 +6,13 @@ import Avatar from "../components/Avatar";
 
 const CheckPasswordPage = () => {
     {/* 비밀번호를 체크하는 로직을 만들자 */}
-    const navigate = useNavigate()
-    const location = useLocation()
-    const [data,setData] = useState({
+    const {data, setData} = useState({
         password: "",
         userId: ""
     })
+    const navigate = useNavigate()
+    const location = useLocation()
+
     const handleOnChange = (e) => {
         const { name, value } = e.target
         setData((preve)=>{
@@ -58,7 +59,7 @@ const CheckPasswordPage = () => {
                     <div className='flex flex-col gap-1'>
                         <label htmlFor='password'>비밀번호 :</label>
                         <input 
-                            type='text'
+                            type='password'
                             id='password'
                             name='password'
                             placeholder="비밀번호를 입력하시오."
