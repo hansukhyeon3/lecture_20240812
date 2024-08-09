@@ -1,11 +1,44 @@
-import React from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import logo from '../assets/kakaologo.png'
 import Sidebar from "../components/Sidebar";
+import { useDispatch, useSelector } from 'react-redux'
+import { setUser, logout } from '../redux/userSlice'
 
 const Home = () => {
+    const navigate = useNavigate()
     const location = useLocation()
     const basePath = location.pathname === '/'
+    const user = useSelector(state => state.user)
+    const dispatch = useDispatch()
+
+    console.log('redux user', user)
+
+    const fetchUserDetails = async()=>{
+        try{
+            const URL = `${process.env.REACT_APP_BACKEND_URL}/api/user-details`
+            const response = await({
+                url: URL,
+                withCredentials: true
+            })
+            console.log('current user', response)
+
+            //1. 리덕스에 쓰기
+            dispatch(setUser(response.data.data))
+
+            //2. 쿠키에 토큰이 없을 때 로그인페이지로 이동
+            if (response.data.data.logout){
+                dispatch(logout())
+                navigate('/email')
+            }
+        }catch(error){
+            dispatch(logout())
+            navigate('/email')
+        }
+    }
+    useEffect(()=>{
+        fetchUserDetails()
+    })
 
     return(
         <div className='grid lg:grid-cols-[300px,1fr] h-screen max-h-screen'>
