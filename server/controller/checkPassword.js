@@ -19,10 +19,14 @@ const checkPassword = async (req,res) => {
             id: user._id,
             email: user.email
         }
-        const token = await jwt.sign(tokenData, process.env.JWT)
-
-        return res.status(200).json({
+        const token = await jwt.sign(tokenData, process.env.JWT_SECREAT_KEY, {expiresIn:'1d'})
+        const cookieOptions = {
+            http: true,
+            secure: true
+        }
+        return res.cookie('token',token,cookieOptions).status(200).json({
             message: '로그인 성공. 이제 대화하러 가자',
+            token: token,
             success: true
         })
     }catch(error){

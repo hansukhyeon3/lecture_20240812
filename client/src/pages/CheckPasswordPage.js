@@ -6,7 +6,7 @@ import Avatar from "../components/Avatar";
 
 const CheckPasswordPage = () => {
     {/* 비밀번호를 체크하는 로직을 만들자 */}
-    const {data, setData} = useState({
+    const [data, setData] = useState({
         password: "",
         userId: ""
     })
