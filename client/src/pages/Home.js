@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import logo from '../assets/kakaologo.png'
 import Sidebar from "../components/Sidebar";
+import axios from "axios";
 import { useDispatch, useSelector } from 'react-redux'
 import { setUser, logout } from '../redux/userSlice'
 
@@ -17,7 +18,7 @@ const Home = () => {
     const fetchUserDetails = async()=>{
         try{
             const URL = `${process.env.REACT_APP_BACKEND_URL}/api/user-details`
-            const response = await({
+            const response = await axios({
                 url: URL,
                 withCredentials: true
             })

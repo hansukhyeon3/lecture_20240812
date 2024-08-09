@@ -5,8 +5,11 @@ import { FaUserPlus } from 'react-icons/fa'
 import { BiLogOut } from 'react-icons/bi'
 import { FiArrowUpLeft } from 'react-icons/fi'
 import Avatar from './Avatar'
+import { useSelector } from 'react-redux'
 
 const Sidebar = () => {
+  const user = useSelector(state=>state?.user)
+
   return (
     <div className='w-full h-full grid grid-cols-[48px,1fr] bg-white'>
         <div className='bg-slate-100 w-12 h-full rounded-tr-lg rounded-br-lg py-5 text-slate-600 flex flex-col justify-between'>
@@ -21,9 +24,9 @@ const Sidebar = () => {
             <div className='flex flex-col items-center'>
                 <button className='mx-auto'>
                     <Avatar
-                        userId=''
-                        name='신달수'
-                        imageUrl=''
+                        userId={user?._id}
+                        name={user?.name}
+                        imageUrl={user?.profile_pic}
                         width={40}
                         height={40}
                     />
