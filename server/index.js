@@ -4,11 +4,9 @@ const router = require('./router/index.js')
 require('dotenv').config({ path: '.env' })
 const connectDB = require('./config/connectDB.js')
 const cookiesParser = require('cookie-parser')
+const { app, server } = require('./soket/index.js')
 
-const app = express()
-
-console.log(`URL:${process.env.FRONTEND_URL}`)
-
+// const app = express()
 // middleware
 app.use(cors({ //cors설정은 맨위에 존재해야함
     origin : process.env.FRONTEND_URL,
@@ -18,6 +16,7 @@ app.use(express.json())
 app.use(cookiesParser()) //쿠키를 읽을수있는 놈으로 만들자.
 app.use('/api',router)
 app.set("view engine", "ejs") //화면 엔진을 ejs로 설정한다. (기본폴더는 /views이다)
+
 
 app.get("/", (req,res)=>{
     res.send("<h1>나의 웹서버에 오신것을 환영합니다.</h1>")

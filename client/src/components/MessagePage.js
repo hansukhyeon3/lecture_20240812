@@ -1,11 +1,73 @@
-import React from "react";
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from "react";
+import {useSelector} from 'react-redux'
+import { Link, useParams } from 'react-router-dom'
 import { IoMdSend } from 'react-icons/io'
-import { FaAngleLeft, FaPlus } from 'react-icons/fa6'
+import { FaAngleLeft, FaPlus, FaImage, FaVideo } from 'react-icons/fa6'
+import { IoClose } from 'react-icons/io5'
 import backgroundImage from '../assets/wallapaper.jpeg'
 import Avatar from "./Avatar";
+import uploadFile from '../helpers/uploadFile'
+import Loding from './Loading'
 
 const MessagePage = () => {
+    const params = useParams()
+    const socketConnection =  useSelector(state=>state?.user?.socketConnection)
+    const user = useSelector(state=>state?.user)
+    const [dataUser,setDataUser] = useState({
+        name: "",
+        email: "",
+        profile_pic: "",
+        online: false,
+        _id: ""
+    })
+    const [openFileUpload, setOpenFileUpload] = useState(false)
+    const [message, setMessage] = useState({
+        text: "", // 보낼 메세지
+        imageUrl: "", // 보낼 사진
+        videoUrl: "" // 보낼 동영상 파일
+    })
+    const [loading, setLoading] = useState(false)
+
+    /**
+     * 소켓통신하기
+     */
+    useEffect(()=>{
+        if (socketConnection){
+            socketConnection.emit('message-page', params.userId)
+            socketConnection.on('message-user',(data)=>{
+                setDataUser(data) //상대방 1명 정보
+            })
+        }
+    },[socketConnection, params?.userId, user])
+
+    const handleUploadFile = async(key,e) => {
+        const file = e.target.files[0]
+        setLoading(true)
+        const response = await uploadFile(file)
+        setLoading(false)
+        setOpenFileUpload(false)
+        handleMessageChange(key,response.url)
+    }
+    const handleMessageChange = (key, value) => {
+        setMessage(preve=> {
+            return {
+                ...preve,
+                imageUrl: key==='imageUrl' ? value : preve.imageUrl,
+                videoUrl: key==='videoUrl' ? value : preve.videoUrl,
+                text: key==='text' ? value : preve.imageUrl
+            }
+        })
+    }
+    const handleSendMessage = (e) => {
+        e.preventDefault()
+        if (message.text || message.imageUrl || message.videoUrl) {
+            console.log(`message.text:${message.text}, message.imageUrl:${message.imageUrl}, message.videoRrl:${message.videoUrl}`)
+            if(socketConnection) {
+
+            }
+        }
+    }
+
     return(
         <div style={{ backgroundImage : `url(${backgroundImage})`}} className='bg-no-repeat bg-cover'>
             <header className='sticky top-0 h-16 bg-white flex justify-between items-center px-4'>
@@ -15,9 +77,9 @@ const MessagePage = () => {
                     </Link>
                     <div>
                         <Avatar
-                            userId=''
-                            name='신달수'
-                            imageUrl=''
+                            userId={dataUser?._id}
+                            name={dataUser?.name}
+                            imageUrl={dataUser?.profile_pic}
                             width={50}
                             height={50}
                         />
@@ -37,17 +99,94 @@ const MessagePage = () => {
                         <p className='text-xs ml-auto w-fit'>12:55</p>
                     </div>
                 </div>
+                {/* 업로드하는 이미지 미리보기 */}
+                {
+                    message.imgeUrl && (
+                        <div className="w-full h-full sticky bottom-0 bg-slate-700 bg-opacity-30 flex justify-center items-center rounded overflow-hidden">
+                            <div onClick={()=>handleMessageChange('imageUrl','')} className="w-fit p-2 absolute top-0 right-0 cursor-pointer hover:text-red-600">
+                                <IoClose size={30}/>
+                            </div>
+                            <div className="bg-white p-6">
+                                <img src={message.imageUrl}
+                                className="aspect-square w-full h-full max-w-sm object-scale-down"
+                            />
+                            </div>
+                        </div>
+                    )
+                }
+                {/* 업로드하는 비디오 미리보기 */}
+                {
+                    message.videoUrl && (
+                        <div className="w-full h-full sticky bottom-0 bg-slate-700 bg-opacity-30 flex justify-center items-center rounded overflow-hidden">
+                            <div onClick={()=>handleMessageChange('videoUrl','')} className="w-fit p-2 absolute top-0 right-0 cursor-pointer hover:text-red-600">
+                                <IoClose size={30}/>
+                            </div>
+                            <div className="bg-white p-6">
+                                <video src={message.videoUrl}
+                                className="aspect-square w-full h-full max-w-sm object-scale-down"
+                                controls
+                                muted
+                                autoPlay
+                                />
+                            </div>
+                        </div>
+                    )
+                }
+                {
+                    loading && (
+                        <div className="w-full h-full flex sticky bottom-0 justify-center items-center">
+                            <Loading/>
+                        </div>
+                    )
+                }
             </section>
 
             {/* 메세지 보내기 */}
             <section className='h-16 bg-white flex items-center px-4'>
-                <div className="relative">
+                <div className="relative" onClick={()=>setOpenFileUpload(preve=>!preve)}>
                     <button className='flex justify-center items-center w-11 h-11 rounded-full hover:bg-primary hover:text-white'>
                         <FaPlus size={20}/>
                     </button>
                 </div>
+                {
+                    openFileUpload && (
+                        <div className='bg-white shadow rounded absolute bottom-20 w-36 p-2'>
+                            <form>
+                                <label htmlFor='uploadImage' className='flex items-center p-2 px-3 gap-3 hover:bg-slate-200 cursor-pointer'>
+                                    <div className='text-primary'>
+                                        <FaImage size={18}/>
+                                    </div>
+                                    <p>Image</p>
+                                </label>
+                                <label htmlFor='uploadVideo' className='flex items-center p-2 px-3 gap-3 hover:bg-slate-200 cursor-pointer'>
+                                    <div className='text-primary'>
+                                        <FaVideo size={18}/>
+                                    </div>
+                                    <p>Video</p>
+                                </label>
+                                <input
+                                    type='file'
+                                    id='uploadImage'
+                                    className='hidden'
+                                    onChange={(e)=>handleUploadFile('imageUrl',e)}
+                                />
+                                <input
+                                    type='file'
+                                    id='uploadVideo'
+                                    className='hidden'
+                                    onChange={(e)=>handleUploadFile('VideoUrl',e)}
+                                />
+                            </form>
+                        </div>
+                    )
+                }
                 <form className='h-full w-full flex gap-2'>
-                    <input type='text' placeholder="메세지를 입력하세요..." className='py-1 px-4 outline-none w-full h-full'/>
+                    <input type='text' 
+                    placeholder="메세지를 입력하세요..." 
+                    className='py-1 px-4 outline-none w-full h-full'
+                    value={message.text}
+                    onChange={(e) => handleSendMessage('',e)}
+                    />
                     <button className='text-primary hover:text-secondary'>
                         <IoMdSend size={28}/>
                     </button>
